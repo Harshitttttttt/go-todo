@@ -70,3 +70,23 @@ func (r *TaskRepository) GetAllTasks() ([]*models.Task, error) {
 
 	return tasks, nil
 }
+
+// Get a task by it's id
+func (r *TaskRepository) GetTaskById(id string) (*models.Task, error) {
+	query := `
+		SELECT id, title, done, created_at FROM todos WHERE id = (?);
+	`
+
+	row := r.DB.QueryRow(query, id)
+
+	var task models.Task
+	err := row.Scan(&task.Id, &task.Title, &task.Done, &task.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &task, nil
+}

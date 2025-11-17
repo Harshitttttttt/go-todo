@@ -30,6 +30,7 @@ func main() {
 	// Task Routes
 	mux.HandleFunc("POST /task", handlers.CreateTask(repo))
 	mux.HandleFunc("GET /task", handlers.GetAllTasks(repo))
+	mux.HandleFunc("GET /task/{id}", handlers.GetASingleTask(repo))
 
 	fmt.Printf("Environment Variables:\nPort: %d\nDatabase Url: %s\nEnvironment: %s\nJWT: %s\n", cfg.Port, cfg.DatabaseUrl, cfg.Environment, cfg.JWTSecret)
 	fmt.Println("Server running at address: http://localhost:8080")

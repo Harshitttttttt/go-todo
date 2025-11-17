@@ -48,3 +48,20 @@ func GetAllTasks(repo *database.TaskRepository) http.HandlerFunc {
 		util.RespondWithJSON(w, http.StatusOK, tasks)
 	}
 }
+
+func GetASingleTask(repo *database.TaskRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+
+		task, err := repo.GetTaskById(id)
+		if err != nil {
+			util.RespondWithError(w, http.StatusInternalServerError, "Error fetching task from DB")
+		}
+
+		if task == nil {
+			util.RespondWithError(w, http.StatusNotFound, "Task not found")
+		}
+
+		util.RespondWithJSON(w, http.StatusOK, task)
+	}
+}
