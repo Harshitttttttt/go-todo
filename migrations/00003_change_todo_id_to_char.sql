@@ -1,0 +1,7 @@
+-- +goose Up
+ALTER TABLE todos 
+  MODIFY COLUMN id CHAR(36) NOT NULL DEFAULT(UUID());
+
+-- +goose Down
+ALTER TABLE todos
+    MODIFY COLUMN id UUID NOT NULL DEFAULT (UUID());
