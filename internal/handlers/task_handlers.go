@@ -65,3 +65,53 @@ func GetASingleTask(repo *database.TaskRepository) http.HandlerFunc {
 		util.RespondWithJSON(w, http.StatusOK, task)
 	}
 }
+
+func DeleteATask(repo *database.TaskRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+
+		deleted, err := repo.DeleteTaskById(id)
+		if err != nil {
+			util.RespondWithError(w, http.StatusInternalServerError, "DB error while deleting task")
+			return
+		}
+
+		if !deleted {
+			util.RespondWithError(w, http.StatusNotFound, "Task not found")
+			return
+		}
+
+		util.RespondWithJSON(w, http.StatusOK, map[string]string{
+			"message": "Task deleted successfully",
+		})
+	}
+}
+
+func UpdateATask(repo *database.TaskRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+
+		var req struct {
+			Title string `json:"title"`
+			Done  bool   `json:"done"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			util.RespondWithError(w, http.StatusBadRequest, "Invalid Request Body")
+			return
+		}
+
+		updated, err := repo.UpdateTaskById(id, req.Title, req.Done)
+		if err != nil {
+			util.RespondWithError(w, http.StatusInternalServerError, "Failed to update task")
+			return
+		}
+
+		if !updated {
+			util.RespondWithError(w, http.StatusNotFound, "Task Not Found")
+			return
+		}
+
+		util.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Task Updated Successfully"})
+	}
+}

@@ -90,3 +90,43 @@ func (r *TaskRepository) GetTaskById(id string) (*models.Task, error) {
 
 	return &task, nil
 }
+
+// Delete a Task
+func (r *TaskRepository) DeleteTaskById(id string) (bool, error) {
+	query := `
+		DELETE FROM todos WHERE id = (?);
+	`
+
+	res, err := r.DB.Exec(query, id)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
+}
+
+// Update a task
+func (r *TaskRepository) UpdateTaskById(id string, title string, done bool) (bool, error) {
+	query := `
+		UPDATE todos 
+		SET title = ?, done = ?
+		WHERE id = ?;
+	`
+
+	res, err := r.DB.Exec(query, title, done, id)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
+}
